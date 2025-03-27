@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadratic Solver</title>
+    <style>
+        /* Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            width: 90%;
+            max-width: 400px;
+            transition: 0.3s;
+        }
+
+        .container:hover {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        h2 {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ff9800;
+            border: none;
+            color: white;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #e68900;
+        }
+
+        #result {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: 400;
+            min-height: 40px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Quadratic Equation Solver</h2>
+        <p>Equation format: <strong>ax² + bx + c = 0</strong></p>
+        
+        <input type="number" id="a" placeholder="Enter coefficient a">
+        <input type="number" id="b" placeholder="Enter coefficient b">
+        <input type="number" id="c" placeholder="Enter coefficient c">
+        
+        <button onclick="solveQuadratic()">Solve</button>
+        
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function solveQuadratic() {
+            let a = parseFloat(document.getElementById("a").value);
+            let b = parseFloat(document.getElementById("b").value);
+            let c = parseFloat(document.getElementById("c").value);
+            let resultElement = document.getElementById("result");
+
+            if (isNaN(a) || isNaN(b) || isNaN(c)) {
+                resultElement.innerHTML = "❌ Please enter valid numbers!";
+                resultElement.classList.add("fade-in");
+                return;
+            }
+
+            let D = (b * b) - (4 * a * c);
+            
+            if (D > 0) {
+                let root1 = (-b + Math.sqrt(D)) / (2 * a);
+                let root2 = (-b - Math.sqrt(D)) / (2 * a);
+                resultElement.innerHTML = `✅ Real & Different Roots:<br> Root 1: ${root1.toFixed(3)}<br> Root 2: ${root2.toFixed(3)}`;
+            } else if (D === 0) {
+                let root = -b / (2 * a);
+                resultElement.innerHTML = `✅ Real & Equal Roots:<br> Root: ${root.toFixed(3)}`;
+            } else {
+                let realPart = (-b / (2 * a)).toFixed(3);
+                let imagPart = simplifySqrt(-D, 2 * a);
+                resultElement.innerHTML = `⚠️ Complex Roots:<br> Root 1: ${realPart} + ${imagPart}i<br> Root 2: ${realPart} - ${imagPart}i`;
+            }
+
+            resultElement.classList.add("fade-in");
+        }
+
+        function simplifySqrt(num, denom) {
+            let rootPart = Math.sqrt(num);
+            if (Number.isInteger(rootPart)) {
+                return (rootPart / denom).toFixed(3);
+            } else {
+                return `√${num}/${denom}`;
+            }
+        }
+    </script>
+
+</body>
+</html>
