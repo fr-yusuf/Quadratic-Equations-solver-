@@ -6,6 +6,8 @@ It solves quadratic equations (ax² + bx + c = 0) and shows the working.
 
 🔗 **Try it live:** https://fr-yusuf.github.io/Quadratic-Equations-solver-/
 
+![Screenshot](screenshot.png)
+
 ## What it can do
 - Finds the roots, including complex ones
 - Shows a step-by-step solution
