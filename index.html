@@ -2,8 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Quadratic Solver</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#595E48">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Quadratic">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         /* Google Font */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
@@ -35,6 +45,8 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
             background: var(--bg);
             color: var(--cream);
             text-align: center;
@@ -768,6 +780,13 @@
 
             window.addEventListener("resize", function () {
                 if (currentGraph && !graphWrap.hidden) drawGraph(currentGraph);
+            });
+        }
+
+        /* ---------- PWA: register the service worker ---------- */
+        if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("sw.js").catch(function () { /* ignore */ });
             });
         }
     </script>
