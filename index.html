@@ -312,6 +312,66 @@
             background: var(--sage-brown-hover);
             transform: translateY(-2px);
         }
+
+        /* Update popup */
+        @keyframes popIn {
+            from { opacity: 0; transform: translate(-50%, 12px); }
+            to   { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        #update-popup {
+            position: fixed;
+            left: 50%;
+            bottom: calc(20px + env(safe-area-inset-bottom));
+            transform: translateX(-50%);
+            width: max-content;
+            max-width: calc(100% - 32px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px 12px 18px;
+            border-radius: 14px;
+            background: var(--sage-brown);
+            color: #FFFFFF;
+            font-size: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            z-index: 9999;
+            animation: popIn 0.4s ease-out;
+        }
+
+        #update-popup button {
+            padding: 8px 14px;
+            font-size: 14px;
+            border-radius: 8px;
+            color: #FFFFFF;
+        }
+
+        #update-popup .update-later {
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        #update-popup .update-later:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        #update-popup .update-btn {
+            background: var(--cream);
+            border-color: var(--cream);
+            color: #3E4234;
+            font-weight: 600;
+        }
+
+        #update-popup .update-btn:hover {
+            background: #FFFFFF;
+            border-color: #FFFFFF;
+        }
+
+        #update-popup button:disabled {
+            opacity: 0.7;
+            cursor: default;
+        }
     </style>
 </head>
 <body>
@@ -783,87 +843,87 @@
             });
         }
 
-        /* ---------- PWA: register the service worker ---------- */
-        if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
-            window.addEventListener("load", function () {
-                navigator.serviceWorker.register("sw.js").catch(function () { /* ignore */ });
+        /* ---------- PWA: service worker + update popup ---------- */
+        function showUpdatePopup(reg) {
+            if (document.getElementById("update-popup")) return;   // only one popup
+
+            var box = document.createElement("div");
+            box.id = "update-popup";
+            box.setAttribute("role", "alert");
+
+            var msg = document.createElement("span");
+            msg.textContent = "New version available!";
+
+            var later = document.createElement("button");
+            later.type = "button";
+            later.className = "update-later";
+            later.textContent = "Later";
+
+            var update = document.createElement("button");
+            update.type = "button";
+            update.className = "update-btn";
+            update.textContent = "Update";
+
+            box.appendChild(msg);
+            box.appendChild(later);
+            box.appendChild(update);
+            document.body.appendChild(box);
+
+            later.addEventListener("click", function () { box.remove(); });
+
+            update.addEventListener("click", function () {
+                update.disabled = true;
+                later.disabled = true;
+                update.textContent = "Updating\u2026";
+                if (reg.waiting) {
+                    reg.waiting.postMessage({ type: "SKIP_WAITING" });   // page reloads by itself afterwards
+                } else {
+                    window.location.reload();
+                }
             });
         }
-        // ========== PWA Update Logic ==========
-let refreshing = false;
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').then((registration) => {
-    console.log('Service Worker registered');
+        if ("serviceWorker" in navigator) {
+            var hasController = !!navigator.serviceWorker.controller;
+            var reloading = false;
 
-    // Check for updates every time the app is opened
-    registration.update();
+            function checkForUpdate(reg) {
+                try {
+                    var p = reg.update();
+                    if (p && p.catch) p.catch(function () { /* offline: ignore */ });
+                } catch (e) { /* ignore */ }
+            }
 
-    // When a new service worker is found and waiting
-    registration.addEventListener('updatefound', () => {
-      const newWorker = registration.installing;
+            navigator.serviceWorker.register("./sw.js").then(function (reg) {
+                // a new version was downloaded earlier but not applied yet
+                if (reg.waiting && navigator.serviceWorker.controller) showUpdatePopup(reg);
 
-      newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          // New version is ready → show the popup
-          showUpdatePopup(registration);
+                // a new version has just been found
+                reg.addEventListener("updatefound", function () {
+                    var worker = reg.installing;
+                    if (!worker) return;
+                    worker.addEventListener("statechange", function () {
+                        if (worker.state === "installed" && navigator.serviceWorker.controller) {
+                            showUpdatePopup(reg);
+                        }
+                    });
+                });
+
+                // look for updates now, and every time the app comes back to the front
+                checkForUpdate(reg);
+                document.addEventListener("visibilitychange", function () {
+                    if (document.visibilityState === "visible") checkForUpdate(reg);
+                });
+            }).catch(function () { /* ignore */ });
+
+            // reload once the new version has taken over (but not on the very first install)
+            navigator.serviceWorker.addEventListener("controllerchange", function () {
+                if (!hasController) { hasController = true; return; }
+                if (reloading) return;
+                reloading = true;
+                window.location.reload();
+            });
         }
-      });
-    });
-  });
-
-  // Reload the page when the new service worker takes control
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (refreshing) return;
-    refreshing = true;
-    window.location.reload();
-  });
-}
-
-function showUpdatePopup(registration) {
-  // Create a simple popup
-  const popup = document.createElement('div');
-  popup.id = 'update-popup';
-  popup.innerHTML = `
-    <div style="
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #3d4a36;
-      color: white;
-      padding: 14px 22px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-      z-index: 9999;
-      font-family: system-ui, sans-serif;
-      font-size: 15px;
-    ">
-      <span>New version available!</span>
-      <button id="update-btn" style="
-        background: #a8c08a;
-        color: #1a2117;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-      ">Update</button>
-    </div>
-  `;
-
-  document.body.appendChild(popup);
-
-  document.getElementById('update-btn').addEventListener('click', () => {
-    // Tell the waiting service worker to activate
-    if (registration.waiting) {
-      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    }
-  });
-}
     </script>
 
 </body>
