@@ -1,56 +1,44 @@
-// Quadratic Solver service worker
-// Strategy: network first (always the newest version when online),
-// saved copy as a backup (when offline).
-var CACHE = "quadratic-solver-v1";
-var FILES = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png",
-  "./icon-maskable.png",
-  "./apple-touch-icon.png"
+const CACHE_NAME = 'quad-solver-v2'; // Increase this number (v3, v4...) every time you update the app
+
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
-self.addEventListener("install", function (event) {
+// Install - cache files
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE)
-      .then(function (cache) { return cache.addAll(FILES); })
-      .then(function () { return self.skipWaiting(); })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
 });
 
-self.addEventListener("activate", function (event) {
+// Activate - remove old caches
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys()
-      .then(function (keys) {
-        return Promise.all(keys.filter(function (k) { return k !== CACHE; })
-                               .map(function (k) { return caches.delete(k); }));
-      })
-      .then(function () { return self.clients.claim(); })
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      )
+    )
   );
+  self.clients.claim();
 });
 
-self.addEventListener("fetch", function (event) {
-  var req = event.request;
-  if (req.method !== "GET" || req.url.indexOf("http") !== 0) return;
-
+// Fetch - serve from cache first
+self.addEventListener('fetch', (event) => {
   event.respondWith(
-    fetch(req)
-      .then(function (res) {
-        // keep a fresh copy (also saves the Google font for offline use)
-        if (res && (res.ok || res.type === "opaque")) {
-          var copy = res.clone();
-          caches.open(CACHE).then(function (cache) { cache.put(req, copy); });
-        }
-        return res;
-      })
-      .catch(function () {
-        return caches.match(req).then(function (hit) {
-          if (hit) return hit;
-          if (req.mode === "navigate") return caches.match("./index.html");
-          return Response.error();
-        });
-      })
+    caches.match(event.request).then((cached) => {
+      return cached || fetch(event.request);
+    })
   );
+});
+
+// Listen for SKIP_WAITING message from the page
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
