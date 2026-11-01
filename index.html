@@ -789,6 +789,81 @@
                 navigator.serviceWorker.register("sw.js").catch(function () { /* ignore */ });
             });
         }
+        // ========== PWA Update Logic ==========
+let refreshing = false;
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then((registration) => {
+    console.log('Service Worker registered');
+
+    // Check for updates every time the app is opened
+    registration.update();
+
+    // When a new service worker is found and waiting
+    registration.addEventListener('updatefound', () => {
+      const newWorker = registration.installing;
+
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          // New version is ready → show the popup
+          showUpdatePopup(registration);
+        }
+      });
+    });
+  });
+
+  // Reload the page when the new service worker takes control
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+}
+
+function showUpdatePopup(registration) {
+  // Create a simple popup
+  const popup = document.createElement('div');
+  popup.id = 'update-popup';
+  popup.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #3d4a36;
+      color: white;
+      padding: 14px 22px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      z-index: 9999;
+      font-family: system-ui, sans-serif;
+      font-size: 15px;
+    ">
+      <span>New version available!</span>
+      <button id="update-btn" style="
+        background: #a8c08a;
+        color: #1a2117;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+      ">Update</button>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+  document.getElementById('update-btn').addEventListener('click', () => {
+    // Tell the waiting service worker to activate
+    if (registration.waiting) {
+      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+  });
+}
     </script>
 
 </body>
