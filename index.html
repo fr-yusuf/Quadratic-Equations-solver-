@@ -64,17 +64,15 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Bouncy effect on tap */
+        /* Bouncy effect (one soft, slow bounce) */
         .container.bounce {
-            animation: bounce 0.55s cubic-bezier(0.28, 0.84, 0.42, 1);
+            animation: bounce 1s ease-in-out;
         }
 
         @keyframes bounce {
             0%   { transform: scale(1); }
-            25%  { transform: scale(0.96); }
-            50%  { transform: scale(1.03); }
-            70%  { transform: scale(0.99); }
-            85%  { transform: scale(1.01); }
+            35%  { transform: scale(0.975); }
+            70%  { transform: scale(1.012); }
             100% { transform: scale(1); }
         }
 
@@ -616,15 +614,17 @@
             var stepsEl = document.getElementById("steps");
             var currentGraph = null;
 
-            /* bouncy tap effect on the front tab */
-            tab.addEventListener("pointerdown", function () {
+            /* one soft bounce of the front tab when Solve or Reset is touched */
+            function bounceTab() {
                 tab.classList.remove("bounce");
                 void tab.offsetWidth;
                 tab.classList.add("bounce");
-            });
+            }
             tab.addEventListener("animationend", function (e) {
                 if (e.animationName === "bounce") tab.classList.remove("bounce");
             });
+            document.getElementById("solveBtn").addEventListener("pointerdown", bounceTab);
+            document.getElementById("resetBtn").addEventListener("pointerdown", bounceTab);
 
             function showMessage(text) {
                 messageEl.textContent = text;

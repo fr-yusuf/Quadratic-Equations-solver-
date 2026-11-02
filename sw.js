@@ -1,7 +1,14 @@
-const CACHE_NAME = 'quad-solver-v3';
+// Quadratic Solver service worker
+// Strategy: cache first (fast, works offline). New versions arrive through the
+// "Update" popup in the app.
+//
+// IMPORTANT: change CACHE_NAME (v3 -> v4 -> v5 ...) every time you update the app.
+// If this file doesn't change, phones won't notice that a new version exists.
+const CACHE_NAME = 'quad-solver-v4';
 
 // The app can't work without these
 const CORE = ['./', './index.html', './manifest.json'];
+// Nice to have (icons). A missing one will not break the install.
 const OPTIONAL = [
   './icon-192.png',
   './icon-512.png',
