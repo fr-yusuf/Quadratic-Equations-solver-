@@ -214,6 +214,23 @@ if (typeof document !== "undefined") {
     document.getElementById("solveBtn").addEventListener("pointerdown", bounceTab);
     document.getElementById("resetBtn").addEventListener("pointerdown", bounceTab);
 
+    /* Material ripple: a circle spreads from the exact spot you touch */
+    function addRipple(e) {
+        var el = e.currentTarget;
+        var rect = el.getBoundingClientRect();
+        var size = Math.max(rect.width, rect.height) * 2;
+        var dot = document.createElement("span");
+        dot.className = "ripple";
+        dot.style.width = dot.style.height = size + "px";
+        dot.style.left = (e.clientX - rect.left - size / 2) + "px";
+        dot.style.top = (e.clientY - rect.top - size / 2) + "px";
+        el.appendChild(dot);
+        dot.addEventListener("animationend", function () { dot.remove(); });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ripple]"), function (el) {
+        el.addEventListener("pointerdown", addRipple);
+    });
+
     function showMessage(text) {
         messageEl.textContent = text;
         messageEl.hidden = false;

@@ -4,7 +4,7 @@
 //
 // IMPORTANT: change CACHE_NAME (v3 -> v4 -> v5 ...) every time you update the app.
 // If this file doesn't change, phones won't notice that a new version exists.
-const CACHE_NAME = 'quad-solver-v6';
+const CACHE_NAME = 'quad-solver-v10';
 
 // The app can't work without these
 const CORE = ['./', './index.html', './style.css', './script.js', './manifest.json'];

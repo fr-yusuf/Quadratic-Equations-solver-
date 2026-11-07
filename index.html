@@ -19,11 +19,16 @@
 <body>
 
     <div class="container" id="tab">
-        <header class="hero">
-            <div class="badge" aria-hidden="true">x²</div>
-            <h2>Quadratic Equation Solver</h2>
+        <header class="app-bar">
+            <div class="app-bar-text">
+                <h2>Quadratic Equation Solver</h2>
+                <p class="format">Equation format: <strong>ax² + bx + c = 0</strong></p>
+            </div>
+            <div class="cookie" aria-hidden="true">
+                <svg viewBox="0 0 100 100"><path d="M50.00 6.34 L51.52 6.49 L53.01 6.95 L54.45 7.67 L55.82 8.58 L57.12 9.62 L58.35 10.70 L59.54 11.74 L60.71 12.66 L61.89 13.42 L63.11 13.98 L64.41 14.34 L65.80 14.51 L67.29 14.56 L68.86 14.53 L70.50 14.49 L72.16 14.53 L73.80 14.71 L75.37 15.09 L76.80 15.69 L78.07 16.55 L79.13 17.65 L79.98 18.96 L80.62 20.43 L81.08 22.01 L81.41 23.65 L81.66 25.26 L81.90 26.82 L82.20 28.28 L82.62 29.62 L83.20 30.83 L83.96 31.94 L84.91 32.97 L86.02 33.96 L87.25 34.95 L88.53 35.98 L89.78 37.08 L90.92 38.27 L91.87 39.56 L92.58 40.95 L93.00 42.42 L93.11 43.94 L92.92 45.49 L92.46 47.03 L91.80 48.54 L91.00 50.00 L90.15 51.40 L89.34 52.75 L88.63 54.06 L88.09 55.35 L87.75 56.66 L87.62 58.00 L87.69 59.40 L87.91 60.87 L88.21 62.42 L88.53 64.02 L88.78 65.67 L88.89 67.31 L88.79 68.92 L88.44 70.44 L87.81 71.83 L86.92 73.07 L85.78 74.13 L84.44 75.02 L82.96 75.75 L81.41 76.35 L79.86 76.88 L78.37 77.39 L76.98 77.94 L75.74 78.59 L74.64 79.37 L73.68 80.31 L72.83 81.43 L72.05 82.69 L71.29 84.07 L70.50 85.51 L69.63 86.93 L68.66 88.26 L67.55 89.42 L66.31 90.36 L64.93 91.03 L63.45 91.40 L61.90 91.48 L60.30 91.30 L58.70 90.91 L57.12 90.38 L55.59 89.79 L54.12 89.22 L52.71 88.75 L51.34 88.44 L50.00 88.34 L48.66 88.44 L47.29 88.75 L45.88 89.22 L44.41 89.79 L42.88 90.38 L41.30 90.91 L39.70 91.30 L38.10 91.48 L36.55 91.40 L35.07 91.03 L33.69 90.36 L32.45 89.42 L31.34 88.26 L30.37 86.93 L29.50 85.51 L28.71 84.07 L27.95 82.69 L27.17 81.43 L26.32 80.31 L25.36 79.37 L24.26 78.59 L23.02 77.94 L21.63 77.39 L20.14 76.88 L18.59 76.35 L17.04 75.75 L15.56 75.02 L14.22 74.13 L13.08 73.07 L12.19 71.83 L11.56 70.44 L11.21 68.92 L11.11 67.31 L11.22 65.67 L11.47 64.02 L11.79 62.42 L12.09 60.87 L12.31 59.40 L12.38 58.00 L12.25 56.66 L11.91 55.35 L11.37 54.06 L10.66 52.75 L9.85 51.40 L9.00 50.00 L8.20 48.54 L7.54 47.03 L7.08 45.49 L6.89 43.94 L7.00 42.42 L7.42 40.95 L8.13 39.56 L9.08 38.27 L10.22 37.08 L11.47 35.98 L12.75 34.95 L13.98 33.96 L15.09 32.97 L16.04 31.94 L16.80 30.83 L17.38 29.62 L17.80 28.28 L18.10 26.82 L18.34 25.26 L18.59 23.65 L18.92 22.01 L19.38 20.43 L20.02 18.96 L20.87 17.65 L21.93 16.55 L23.20 15.69 L24.63 15.09 L26.20 14.71 L27.84 14.53 L29.50 14.49 L31.14 14.53 L32.71 14.56 L34.20 14.51 L35.59 14.34 L36.89 13.98 L38.11 13.42 L39.29 12.66 L40.46 11.74 L41.65 10.70 L42.88 9.62 L44.18 8.58 L45.55 7.67 L46.99 6.95 L48.48 6.49 Z"/></svg>
+                <span>x²</span>
+            </div>
         </header>
-        <p class="format">Equation format: <strong>ax² + bx + c = 0</strong></p>
 
         <div class="inputs">
             <label class="field">
@@ -41,8 +46,8 @@
         </div>
 
         <div class="btn-row">
-            <button type="button" id="solveBtn">Solve</button>
-            <button type="button" id="resetBtn">Reset</button>
+            <button type="button" id="solveBtn" class="btn" data-ripple>Solve</button>
+            <button type="button" id="resetBtn" class="btn" data-ripple>Reset</button>
         </div>
 
         <div id="message" class="message" role="alert" hidden></div>
@@ -55,14 +60,14 @@
                 <div id="legend" class="legend"></div>
             </div>
             <details class="steps">
-                <summary>Step-by-step solution</summary>
+                <summary data-ripple>Step-by-step solution</summary>
                 <ol id="steps"></ol>
             </details>
         </div>
     </div>
 
     <footer class="insta-footer">
-        <a class="insta-btn" href="https://instagram.com/vxyr_ix" target="_blank" rel="noopener">vxyr_ix</a>
+        <a class="insta-btn" data-ripple href="https://instagram.com/vxyr_ix" target="_blank" rel="noopener">vxyr_ix</a>
     </footer>
 
     <script src="script.js"></script>
